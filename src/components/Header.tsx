@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wind, Shield, Settings, AlertTriangle, Sparkles, Share2 } from 'lucide-react';
+import { Wind, Settings, AlertTriangle, Sparkles, Share2 } from 'lucide-react';
 import { SmogSeverityLevel, SmogSeverityData, UrbanZoneProfile } from '../types';
 import { SMOG_SEVERITIES } from '../data/urbanProfiles';
 import { getStoredApiKey } from '../services/geminiService';
@@ -12,10 +12,13 @@ interface HeaderProps {
   onOpenBulletin: () => void;
 }
 
+/**
+ * Top application header containing live atmospheric status, severity simulator, and settings triggers
+ */
 export const Header: React.FC<HeaderProps> = ({
   currentSeverity,
   onSeverityChange,
-  activeZone,
+  activeZone: _activeZone,
   onOpenSettings,
   onOpenBulletin,
 }) => {
@@ -58,6 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center space-x-2 md:hidden">
               <button
                 onClick={onOpenBulletin}
+                aria-label="Share Community Advisory"
                 className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-700 text-xs flex items-center gap-1"
                 title="Share Community Advisory"
               >
@@ -65,6 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button
                 onClick={onOpenSettings}
+                aria-label="Open AI Engine Settings"
                 className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700"
                 title="AI Engine Settings"
               >
@@ -77,13 +82,16 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-4">
             
             {/* Live AQI & Inversion Status Pill */}
-            <div className={`px-3 py-1.5 rounded-xl border flex items-center space-x-2.5 ${
-              currentSeverity === 'severe-inversion' 
-                ? 'bg-rose-950/40 border-rose-500/50 text-rose-200 inversion-alert-pulse' 
-                : currentSeverity === 'very-poor'
-                ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
-                : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
-            }`}>
+            <div 
+              aria-label={`Current Ambient AQI: ${severityData.aqi}, PM2.5: ${severityData.pm25} micrograms per cubic meter`}
+              className={`px-3 py-1.5 rounded-xl border flex items-center space-x-2.5 ${
+                currentSeverity === 'severe-inversion' 
+                  ? 'bg-rose-950/40 border-rose-500/50 text-rose-200 inversion-alert-pulse' 
+                  : currentSeverity === 'very-poor'
+                  ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
+                  : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
+              }`}
+            >
               <div className="flex items-center space-x-1.5">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
@@ -107,12 +115,14 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Smog Severity Simulator Pill Selector */}
-            <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs">
+            <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs" role="group" aria-label="Simulate Smog Severity">
               <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider px-2 hidden lg:inline">
                 Simulate:
               </span>
               <button
                 onClick={() => onSeverityChange('moderate')}
+                aria-label="Simulate Moderate Smog (AQI 115)"
+                aria-pressed={currentSeverity === 'moderate'}
                 className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
                   currentSeverity === 'moderate'
                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
@@ -123,6 +133,8 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button
                 onClick={() => onSeverityChange('very-poor')}
+                aria-label="Simulate Very Poor Smog (AQI 285)"
+                aria-pressed={currentSeverity === 'very-poor'}
                 className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
                   currentSeverity === 'very-poor'
                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
@@ -133,6 +145,8 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button
                 onClick={() => onSeverityChange('severe-inversion')}
+                aria-label="Simulate Severe Winter Inversion (AQI 440+)"
+                aria-pressed={currentSeverity === 'severe-inversion'}
                 className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${
                   currentSeverity === 'severe-inversion'
                     ? 'bg-rose-500/25 text-rose-300 border border-rose-500/50 shadow-sm'
@@ -148,6 +162,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="hidden md:flex items-center space-x-2">
               <button
                 onClick={onOpenBulletin}
+                aria-label="Generate WhatsApp and RWA Community Advisory Bulletin"
                 className="px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700/90 text-slate-200 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition-colors"
                 title="Generate WhatsApp/Community Advisory"
               >
@@ -157,6 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={onOpenSettings}
+                aria-label="Open AI Engine Configuration and API Key Settings"
                 className="px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs flex items-center gap-1.5 transition-colors"
                 title="Configure Gemini API Key"
               >

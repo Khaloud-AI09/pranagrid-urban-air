@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Share2, Check, Zap, ArrowRight, ShieldCheck, Heart, Sparkles, TrendingDown } from 'lucide-react';
+import { Users, Share2, Check, Zap, Heart } from 'lucide-react';
 import { SustainableAlternative, UserContext } from '../../types';
 
 interface CommunityHubViewProps {
@@ -9,6 +9,9 @@ interface CommunityHubViewProps {
   context: UserContext;
 }
 
+/**
+ * Community Action Hub offering systemic alternatives for mobility, cooking fuels, and neighborhood vigils
+ */
 export const CommunityHubView: React.FC<CommunityHubViewProps> = ({
   alternatives,
   onToggleAlternative,
@@ -39,6 +42,7 @@ export const CommunityHubView: React.FC<CommunityHubViewProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={onOpenBulletin}
+            aria-label="Create Community WhatsApp and RWA Advisory"
             className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20"
           >
             <Share2 className="w-4 h-4" />
@@ -93,6 +97,7 @@ export const CommunityHubView: React.FC<CommunityHubViewProps> = ({
 
                 <button
                   onClick={() => onToggleAlternative(alt.id)}
+                  aria-label={`${isAdopted ? 'Revoke adoption of' : 'Adopt'} ${alt.title}`}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all self-start sm:self-center ${
                     isAdopted
                       ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20'

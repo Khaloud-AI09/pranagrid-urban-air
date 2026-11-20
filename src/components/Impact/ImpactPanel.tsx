@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, TrendingDown, Leaf, Clock, DollarSign, Calculator, ChevronUp, ChevronDown, Sparkles, Activity } from 'lucide-react';
+import { Leaf, Clock, DollarSign, Calculator, ChevronUp, ChevronDown, Activity } from 'lucide-react';
 import { CalculatedImpact, UserContext } from '../../types';
 import { MetricCard } from './MetricCard';
 import { FormulaInspectorModal } from './FormulaInspectorModal';
@@ -10,6 +10,9 @@ interface ImpactPanelProps {
   context: UserContext;
 }
 
+/**
+ * Sticky desktop & collapsible mobile Direct Impact Quantifier panel tracking real-time health and environmental gains
+ */
 export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => {
   const [isFormulaModalOpen, setIsFormulaModalOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -21,7 +24,11 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
   return (
     <>
       {/* DESKTOP PERSISTENT PANEL */}
-      <aside className="hidden lg:block w-80 xl:w-88 shrink-0">
+      <aside 
+        className="hidden lg:block w-80 xl:w-88 shrink-0" 
+        aria-label="Direct Impact Quantifier Dashboard"
+        aria-live="polite"
+      >
         <div className="sticky top-20 space-y-4">
           
           {/* Main Container */}
@@ -43,6 +50,7 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
 
               <button
                 onClick={() => setIsFormulaModalOpen(true)}
+                aria-label="Inspect Scientific Formulas"
                 className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-300 hover:bg-slate-800 transition-colors"
                 title="View Scientific Formulas"
               >
@@ -51,7 +59,10 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
             </div>
 
             {/* Estimated Indoor AQI Dial */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/30 border border-emerald-500/20 space-y-2.5">
+            <div 
+              className="p-4 rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/30 border border-emerald-500/20 space-y-2.5"
+              aria-label={`Indoor sanctuary estimated AQI: ${indoorAQI}, which is ${aqiDropPercent} percent cleaner than ambient AQI ${ambientAQI}`}
+            >
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 font-medium">Estimated Indoor Sanctuary</span>
                 <span className="text-emerald-400 font-mono font-bold">-{aqiDropPercent}% Cleaner</span>
@@ -78,7 +89,7 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
               </div>
 
               {/* Progress bar */}
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden" role="progressbar" aria-valuenow={aqiDropPercent} aria-valuemin={0} aria-valuemax={100} aria-label="Indoor air filtration progress">
                 <div
                   className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(100, Math.max(15, aqiDropPercent))}%` }}
@@ -151,6 +162,7 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
             {/* Formula Inspector Trigger */}
             <button
               onClick={() => setIsFormulaModalOpen(true)}
+              aria-label="Inspect Scientific Formulas and Math Equations"
               className="w-full py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
             >
               <Calculator className="w-3.5 h-3.5 text-emerald-400" />
@@ -163,7 +175,10 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
       </aside>
 
       {/* MOBILE COLLAPSIBLE DRAWER / BAR */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0F172A]/95 border-t border-slate-800 backdrop-blur-xl shadow-2xl">
+      <div 
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0F172A]/95 border-t border-slate-800 backdrop-blur-xl shadow-2xl"
+        aria-live="polite"
+      >
         <div className="max-w-7xl mx-auto px-4 py-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -182,6 +197,8 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
 
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
+              aria-label={isMobileOpen ? "Collapse Impact Summary" : "Expand Full Impact Summary"}
+              aria-expanded={isMobileOpen}
               className="p-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs flex items-center gap-1"
             >
               <span>{isMobileOpen ? 'Collapse' : 'View Impact'}</span>
@@ -220,6 +237,7 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ impact, context }) => 
 
               <button
                 onClick={() => setIsFormulaModalOpen(true)}
+                aria-label="Open Transparent Scientific Formulas Modal"
                 className="w-full py-2 rounded-xl bg-slate-800 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5"
               >
                 <Calculator className="w-3.5 h-3.5 text-emerald-400" />

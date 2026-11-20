@@ -7,6 +7,12 @@ import { URBAN_ZONE_PROFILES, SMOG_SEVERITIES, HOUSEHOLD_PROFILES, SETUP_PROFILE
  * 1. Berkeley Earth PM2.5-to-Cigarette Equivalence Model (22 ug/m3 inhaled = 1 cigarette/day)
  * 2. CPCB & WHO Daily Inhalation Volume Model (Adult resting/light activity: ~15 m3/day)
  * 3. IPCC Tier-1 Fuel Emission Factors for Light Motor Vehicles & LPG
+ * 
+ * @param context Current user demographic, geographic archetype, and smog severity
+ * @param routines Active routine blocks with adoption states
+ * @param hacks Indoor Air Quality checklist items
+ * @param alternatives Sustainable community alternatives
+ * @returns Comprehensive quantified environmental and physiological metrics
  */
 export function calculateDirectImpact(
   context: UserContext,
@@ -14,7 +20,7 @@ export function calculateDirectImpact(
   hacks: IAQHack[],
   alternatives: SustainableAlternative[]
 ): CalculatedImpact {
-  const zone = URBAN_ZONE_PROFILES[context.zone];
+  const _zone = URBAN_ZONE_PROFILES[context.zone];
   const severity = SMOG_SEVERITIES[context.severity];
   const household = HOUSEHOLD_PROFILES[context.household];
   const setup = SETUP_PROFILES[context.setup];

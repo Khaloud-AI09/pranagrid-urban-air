@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Info, ShieldAlert, Sparkles, CheckCircle, Sun, Moon } from 'lucide-react';
+import { Clock, ShieldAlert, Sparkles, CheckCircle, Sun, Moon } from 'lucide-react';
 import { RoutineBlock, UserContext, DiurnalPoint } from '../../types';
 import { RoutineBlockCard } from './RoutineBlockCard';
 import { getDiurnalCurveForSeverity } from '../../data/diurnalSmogCurves';
@@ -12,6 +12,9 @@ interface RoutineTimelineProps {
   onAdoptAll: () => void;
 }
 
+/**
+ * 24-Hour Smog-Aware Routine Optimizer featuring an inline SVG visualization of boundary layer vs PM2.5
+ */
 export const RoutineTimeline: React.FC<RoutineTimelineProps> = ({
   context,
   routines,
@@ -25,7 +28,7 @@ export const RoutineTimeline: React.FC<RoutineTimelineProps> = ({
   const allAdopted = adoptedCount === routines.length;
 
   // Generate SVG path coordinates for 24h curves
-  // ViewBox: 0 0 800 220. Margins: left 40, right 40, top 20, bottom 30
+  // ViewBox: 0 0 800 220. Margins: left 45, right 45, top 25, bottom 35
   const svgW = 800;
   const svgH = 220;
   const padX = 45;
@@ -77,6 +80,7 @@ export const RoutineTimeline: React.FC<RoutineTimelineProps> = ({
 
         <button
           onClick={onAdoptAll}
+          aria-label={allAdopted ? "All low-emission routine swaps adopted" : "Adopt all 5 low-emission routine swaps"}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
             allAdopted
               ? 'bg-slate-800 text-emerald-400 border border-emerald-500/40'
@@ -98,7 +102,7 @@ export const RoutineTimeline: React.FC<RoutineTimelineProps> = ({
       </div>
 
       {/* 24-HOUR BOUNDARY LAYER HEIGHT VS PM2.5 INLINE SVG VISUALIZER */}
-      <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800 shadow-xl space-y-3">
+      <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800 shadow-xl space-y-3" aria-label="24-Hour Boundary Layer Height vs PM2.5 Atmospheric Dynamics">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
             <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
@@ -127,7 +131,8 @@ export const RoutineTimeline: React.FC<RoutineTimelineProps> = ({
           <svg
             viewBox={`0 0 ${svgW} ${svgH}`}
             className="w-full min-w-[620px] h-48 select-none"
-            aria-label="24-hour Boundary Layer Height vs PM2.5 Chart"
+            role="img"
+            aria-label="24-hour Boundary Layer Height vs PM2.5 concentration curve showing 12:00 to 15:30 safe window"
           >
             <defs>
               <linearGradient id="blhGradient" x1="0" y1="0" x2="0" y2="1">

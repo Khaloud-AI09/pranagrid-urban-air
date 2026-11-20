@@ -1,4 +1,4 @@
-import { UserContext, CoPilotMessage } from '../types';
+import { UserContext } from '../types';
 import { URBAN_ZONE_PROFILES, SMOG_SEVERITIES, HOUSEHOLD_PROFILES, SETUP_PROFILES } from '../data/urbanProfiles';
 
 export interface StructuredAIOutput {
@@ -17,6 +17,9 @@ export interface StructuredAIOutput {
 const LOCAL_STORAGE_KEY = 'pranagrid_gemini_api_key';
 const LOCAL_STORAGE_MODEL = 'pranagrid_gemini_model';
 
+/**
+ * Retrieves the stored Gemini API key from browser localStorage
+ */
 export function getStoredApiKey(): string {
   try {
     return localStorage.getItem(LOCAL_STORAGE_KEY) || '';
@@ -25,6 +28,9 @@ export function getStoredApiKey(): string {
   }
 }
 
+/**
+ * Saves a user-provided Gemini API key to client-side localStorage
+ */
 export function saveStoredApiKey(key: string): void {
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY, key.trim());
@@ -33,6 +39,9 @@ export function saveStoredApiKey(key: string): void {
   }
 }
 
+/**
+ * Retrieves selected Gemini model preference from localStorage
+ */
 export function getStoredModel(): string {
   try {
     return localStorage.getItem(LOCAL_STORAGE_MODEL) || 'gemini-2.5-flash';
@@ -41,6 +50,9 @@ export function getStoredModel(): string {
   }
 }
 
+/**
+ * Saves selected model preference to localStorage
+ */
 export function saveStoredModel(model: string): void {
   try {
     localStorage.setItem(LOCAL_STORAGE_MODEL, model);
@@ -54,7 +66,7 @@ export function saveStoredModel(model: string): void {
  * Delivers immediate, high-fidelity structured responses based on
  * atmospheric boundary-layer physics and the active household profile.
  */
-function getLocalFallbackResponse(query: string, context: UserContext): StructuredAIOutput {
+export function getLocalFallbackResponse(query: string, context: UserContext): StructuredAIOutput {
   const zone = URBAN_ZONE_PROFILES[context.zone];
   const severity = SMOG_SEVERITIES[context.severity];
   const household = HOUSEHOLD_PROFILES[context.household];
@@ -150,7 +162,7 @@ function getLocalFallbackResponse(query: string, context: UserContext): Structur
     headline: `Contextual Atmospheric Intelligence for ${zone.name}`,
     actionPlan: [
       `Real-Time Alert Context: Current smog severity is ${severity.label} with an inversion ceiling at ~${severity.boundaryLayerHeight}m. Wind speed is stagnant at ${severity.windSpeed} km/h.`,
-      `Tailored Recommendation for ${household.label}: Shield indoor environments during the 06:00–09:30 and 18:00–21:30 inversion bounds.`,
+      `Tailored Recommendation for ${household.label} (${setup.label}): Shield indoor environments during the 06:00–09:30 and 18:00–21:30 inversion bounds.`,
       `Optimal Actionable Swap: Adopt zero-cost micro-fiber damp mopping and switch all possible commuter travel to electrified rapid transit.`,
       `Indoor Clean Air Sanctuary: Run continuous low-flow filtration in primary living and sleeping quarters to preserve bronchial cilia.`
     ],

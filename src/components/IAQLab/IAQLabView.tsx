@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wrench, Check, Plus, DollarSign, Sparkles, Filter, Droplets, Leaf, Shield, ChevronDown, ChevronUp } from 'lucide-react';
+import { Wrench, Check, Plus, Sparkles, Droplets, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { IAQHack } from '../../types';
 import { CorsiRosenthalModal } from './CorsiRosenthalModal';
 
@@ -9,6 +9,9 @@ interface IAQLabViewProps {
   onActivateAllHacks: () => void;
 }
 
+/**
+ * Indoor Air Quality (IAQ) Hacks and Open Science DIY Lab
+ */
 export const IAQLabView: React.FC<IAQLabViewProps> = ({
   hacks,
   onToggleHack,
@@ -48,6 +51,7 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsCRModalOpen(true)}
+            aria-label="Open Corsi-Rosenthal Air Cleaner Lab"
             className="px-3.5 py-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
@@ -56,6 +60,7 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
 
           <button
             onClick={onActivateAllHacks}
+            aria-label="Activate all indoor air quality hacks"
             className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-colors shadow-lg shadow-emerald-500/20"
           >
             Activate All Hacks ({activeCount}/{hacks.length})
@@ -64,8 +69,10 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
       </div>
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-3" role="tablist" aria-label="Filter Hacks by Category">
         <button
+          role="tab"
+          aria-selected={selectedCategory === 'all'}
           onClick={() => setSelectedCategory('all')}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
             selectedCategory === 'all'
@@ -76,6 +83,8 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
           All Interventions ({hacks.length})
         </button>
         <button
+          role="tab"
+          aria-selected={selectedCategory === 'zero-cost'}
           onClick={() => setSelectedCategory('zero-cost')}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
             selectedCategory === 'zero-cost'
@@ -87,6 +96,8 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
           Zero-Cost Behavioral
         </button>
         <button
+          role="tab"
+          aria-selected={selectedCategory === 'low-budget-diy'}
           onClick={() => setSelectedCategory('low-budget-diy')}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
             selectedCategory === 'low-budget-diy'
@@ -98,6 +109,8 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
           Low-Budget DIY Engineering
         </button>
         <button
+          role="tab"
+          aria-selected={selectedCategory === 'bio-filtration'}
           onClick={() => setSelectedCategory('bio-filtration')}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
             selectedCategory === 'bio-filtration'
@@ -150,6 +163,7 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
 
                   <button
                     onClick={() => onToggleHack(hack.id)}
+                    aria-label={`${isChecklisted ? 'Remove' : 'Add'} ${hack.title} to checklist`}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
                       isChecklisted
                         ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20'
@@ -220,6 +234,7 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
               <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
                 <button
                   onClick={() => setExpandedHackId(isExpanded ? null : hack.id)}
+                  aria-label={isExpanded ? `Hide instructions for ${hack.title}` : `View instructions for ${hack.title}`}
                   className="text-slate-400 hover:text-slate-200 flex items-center gap-1 transition-colors"
                 >
                   <span>{isExpanded ? 'Hide Steps' : 'View Instructions'}</span>
@@ -229,6 +244,7 @@ export const IAQLabView: React.FC<IAQLabViewProps> = ({
                 {hack.id === 'hack-corsi-rosenthal' && (
                   <button
                     onClick={() => setIsCRModalOpen(true)}
+                    aria-label="Open Corsi-Rosenthal 3D and CADR Engineering Lab"
                     className="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1"
                   >
                     <span>Open 3D/CADR Lab</span>

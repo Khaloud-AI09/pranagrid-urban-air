@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Send, Sparkles, Bot, User, RefreshCw, Compass, ShieldAlert } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Send, Sparkles, Bot, User, RefreshCw, Compass } from 'lucide-react';
 import { UserContext, CoPilotMessage } from '../../types';
 import { querySmogCoPilot, StructuredAIOutput } from '../../services/geminiService';
 import { ResponseCard } from './ResponseCard';
@@ -10,6 +10,9 @@ interface CoPilotViewProps {
   onAdoptFromAI: () => void;
 }
 
+/**
+ * Conversational and actionable Smog Co-Pilot interface with streaming cards and prompt chips
+ */
 export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI }) => {
   const [messages, setMessages] = useState<CoPilotMessage[]>([
     {
@@ -39,6 +42,7 @@ export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI
   const [inputQuery, setInputQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [streamingText, setStreamingText] = useState('');
+  const messageCounter = useRef(1);
 
   // Dynamically generated smart prompt chips based on current user context
   const smartChips = [
@@ -53,8 +57,9 @@ export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI
     if (!query || isLoading) return;
 
     setInputQuery('');
-    const userMsgId = `user-${Date.now()}`;
-    const assistantMsgId = `assistant-${Date.now()}`;
+    messageCounter.current += 1;
+    const userMsgId = `user-msg-${messageCounter.current}`;
+    const assistantMsgId = `assistant-msg-${messageCounter.current}`;
 
     // Append user message
     setMessages(prev => [
@@ -126,12 +131,13 @@ export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI
           <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
           One-Click Smart Inquiries (Tailored to Your Active Profile):
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Smart Inquiry Chips">
           {smartChips.map((chip, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(chip)}
               disabled={isLoading}
+              aria-label={`Ask smart prompt: ${chip}`}
               className="text-xs bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 rounded-xl px-3.5 py-2 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex items-center gap-2"
             >
               <span className="text-emerald-400 font-mono text-[11px]">✦</span>
@@ -142,7 +148,11 @@ export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI
       </div>
 
       {/* Conversation Stream */}
-      <div className="space-y-4">
+      <div 
+        className="space-y-4"
+        aria-live="polite"
+        aria-relevant="additions text"
+      >
         {messages.map((msg) => (
           <div key={msg.id} className="space-y-2">
             {msg.sender === 'user' ? (
@@ -179,7 +189,7 @@ export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI
 
         {/* Live Streaming Indicator */}
         {isLoading && (
-          <div className="flex items-start gap-3 animate-in fade-in duration-300">
+          <div className="flex items-start gap-3 animate-in fade-in duration-300" role="status" aria-live="polite">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
               <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
             </div>
@@ -203,12 +213,14 @@ export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI
           handleSend(inputQuery);
         }}
         className="sticky bottom-4 z-20"
+        aria-label="Ask Smog Co-Pilot"
       >
         <div className="relative flex items-center bg-slate-900/95 border border-slate-700/90 rounded-2xl p-1.5 shadow-2xl backdrop-blur-xl focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all">
           <input
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
+            aria-label="Enter question for Co-Pilot"
             placeholder="Ask about school commute timing, N95 vs cloth masks, kitchen tadka exhaust, or Corsi-Rosenthal builds..."
             className="flex-1 bg-transparent px-4 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none"
             disabled={isLoading}
@@ -216,6 +228,7 @@ export const CoPilotView: React.FC<CoPilotViewProps> = ({ context, onAdoptFromAI
           <button
             type="submit"
             disabled={!inputQuery.trim() || isLoading}
+            aria-label="Send inquiry to Co-Pilot"
             className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 shrink-0"
           >
             <span>Ask Co-Pilot</span>

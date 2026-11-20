@@ -1,5 +1,8 @@
 import { DiurnalPoint, SmogSeverityLevel } from '../types';
 
+/**
+ * Baseline 24-hour diurnal profile of urban boundary layer height and particulate ratios
+ */
 export const DIURNAL_24H_BASE: Array<{ hour: number; label: string; baseBLH: number; basePM25Ratio: number }> = [
   { hour: 0, label: '12 AM', baseBLH: 220, basePM25Ratio: 0.88 },
   { hour: 2, label: '2 AM', baseBLH: 190, basePM25Ratio: 0.92 },
@@ -24,16 +27,20 @@ export const DIURNAL_24H_BASE: Array<{ hour: number; label: string; baseBLH: num
   { hour: 23, label: '11 PM', baseBLH: 200, basePM25Ratio: 0.92 },
 ];
 
+/**
+ * Computes the 24-hour diurnal atmospheric dispersion curve for a given severity level.
+ * @param severity Active smog severity level
+ * @param basePM25 Measured baseline ambient PM2.5 in ug/m3
+ * @returns Array of 24 hourly data points containing BLH and PM2.5
+ */
 export function getDiurnalCurveForSeverity(severity: SmogSeverityLevel, basePM25: number): DiurnalPoint[] {
-  const scale = severity === 'moderate' ? 0.35 : severity === 'very-poor' ? 0.75 : 1.25;
-
   return DIURNAL_24H_BASE.map(pt => {
     const pm25Val = Math.round(basePM25 * pt.basePM25Ratio * (severity === 'severe-inversion' ? 1.05 : 0.95));
     const blhVal = Math.round(pt.baseBLH * (severity === 'moderate' ? 1.25 : severity === 'very-poor' ? 0.95 : 0.72));
     const isVent = pt.hour >= 12 && pt.hour <= 15;
     const isPeak = (pt.hour >= 6 && pt.hour <= 9) || (pt.hour >= 18 && pt.hour <= 21);
 
-    let ambientRisk: 'Low' | 'Caution' | 'Danger' | 'Hazardous' = 'Danger';
+    let ambientRisk: 'Low' | 'Caution' | 'Danger' | 'Hazardous';
     if (pm25Val < 50) ambientRisk = 'Low';
     else if (pm25Val < 120) ambientRisk = 'Caution';
     else if (pm25Val < 250) ambientRisk = 'Danger';

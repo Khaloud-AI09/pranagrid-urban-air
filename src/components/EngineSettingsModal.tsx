@@ -8,24 +8,32 @@ interface EngineSettingsModalProps {
   onSettingsUpdated: () => void;
 }
 
+/**
+ * Modal to configure live Google Gemini API key or switch to Local Reasoning Engine
+ */
 export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
   isOpen,
   onClose,
   onSettingsUpdated,
 }) => {
-  const [apiKey, setApiKey] = useState('');
-  const [model, setModel] = useState('gemini-2.5-flash');
+  const [apiKey, setApiKey] = useState(() => getStoredApiKey());
+  const [model, setModel] = useState(() => getStoredModel());
   const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [testMessage, setTestMessage] = useState('');
 
+  // Synchronize values whenever modal opens and add Escape key listener
   useEffect(() => {
-    if (isOpen) {
-      setApiKey(getStoredApiKey());
-      setModel(getStoredModel());
-      setTestStatus('idle');
-      setTestMessage('');
-    }
-  }, [isOpen]);
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -73,14 +81,20 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
         setTestStatus('error');
         setTestMessage(`API connection error (${res.status}): ${errorData?.error?.message || 'Check key validity'}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
       setTestStatus('error');
-      setTestMessage(`Network ping error: ${err?.message || 'Unable to reach Google API endpoints'}`);
+      setTestMessage(`Network ping error: ${msg || 'Unable to reach Google API endpoints'}`);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="engine-settings-title"
+    >
       <div className="relative w-full max-w-lg bg-[#0F172A] border border-slate-700/80 rounded-2xl shadow-2xl p-6 text-slate-100 overflow-hidden">
         
         {/* Glow Accent */}
@@ -93,12 +107,13 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">AI Engine Configuration</h3>
+              <h3 id="engine-settings-title" className="font-bold text-base text-white">AI Engine Configuration</h3>
               <p className="text-xs text-slate-400">PranaGrid / InversionOS Dual-Mode Architecture</p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close AI Engine Settings"
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -124,11 +139,12 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
         {/* API Key Form */}
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+            <label htmlFor="gemini-api-key-input" className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
               <Key className="w-3.5 h-3.5 text-slate-400" />
               Google Gemini API Key (Optional)
             </label>
             <input
+              id="gemini-api-key-input"
               type="password"
               placeholder="AIzaSy... (leave blank to run in Local Mode)"
               value={apiKey}
@@ -141,11 +157,12 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+            <label htmlFor="gemini-model-select" className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5 text-slate-400" />
               Model Target
             </label>
             <select
+              id="gemini-model-select"
               value={model}
               onChange={(e) => setModel(e.target.value)}
               className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors font-mono cursor-pointer"
@@ -157,13 +174,17 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
 
           {/* Test Status Feedback */}
           {testMessage && (
-            <div className={`p-3 rounded-xl border text-xs flex items-start gap-2 ${
-              testStatus === 'success'
-                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
-                : testStatus === 'error'
-                ? 'bg-rose-950/40 border-rose-500/40 text-rose-200'
-                : 'bg-slate-800/60 border-slate-700 text-slate-300'
-            }`}>
+            <div 
+              role="status" 
+              aria-live="polite"
+              className={`p-3 rounded-xl border text-xs flex items-start gap-2 ${
+                testStatus === 'success'
+                  ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
+                  : testStatus === 'error'
+                  ? 'bg-rose-950/40 border-rose-500/40 text-rose-200'
+                  : 'bg-slate-800/60 border-slate-700 text-slate-300'
+              }`}
+            >
               {testStatus === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />}
               {testStatus === 'error' && <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />}
               {testStatus === 'testing' && <RefreshCw className="w-4 h-4 text-slate-400 shrink-0 mt-0.5 animate-spin" />}
@@ -178,6 +199,7 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
                 type="button"
                 onClick={handleTestConnection}
                 disabled={testStatus === 'testing' || !apiKey}
+                aria-label="Test Gemini API Connection"
                 className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${testStatus === 'testing' ? 'animate-spin' : ''}`} />
@@ -187,6 +209,7 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
                 <button
                   type="button"
                   onClick={handleClearKey}
+                  aria-label="Clear API Key"
                   className="px-2.5 py-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 text-xs transition-colors"
                 >
                   Clear Key
@@ -198,6 +221,7 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
+                aria-label="Cancel and close settings"
                 className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
               >
                 Cancel
@@ -205,6 +229,7 @@ export const EngineSettingsModal: React.FC<EngineSettingsModalProps> = ({
               <button
                 type="button"
                 onClick={handleSave}
+                aria-label="Save and apply AI settings"
                 className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-colors shadow-lg shadow-emerald-500/20"
               >
                 Apply & Save

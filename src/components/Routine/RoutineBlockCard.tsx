@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, ArrowRight, ShieldCheck, AlertOctagon, TrendingDown, Clock, Zap } from 'lucide-react';
+import { Check, ShieldCheck, AlertOctagon, TrendingDown, Clock, Zap } from 'lucide-react';
 import { RoutineBlock } from '../../types';
 
 interface RoutineBlockCardProps {
@@ -7,6 +7,9 @@ interface RoutineBlockCardProps {
   onToggleAdopt: (id: string) => void;
 }
 
+/**
+ * Individual 24h routine block card with boundary layer status and low-emission swap toggle
+ */
 export const RoutineBlockCard: React.FC<RoutineBlockCardProps> = ({ block, onToggleAdopt }) => {
   const isAdopted = block.isAdopted;
 
@@ -45,6 +48,7 @@ export const RoutineBlockCard: React.FC<RoutineBlockCardProps> = ({ block, onTog
           {/* Adopt Toggle Button */}
           <button
             onClick={() => onToggleAdopt(block.id)}
+            aria-label={`${isAdopted ? 'Revoke adoption of' : 'Adopt'} ${block.title} routine swap`}
             className={`px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
               isAdopted
                 ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20'

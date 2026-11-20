@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Users, Flame, Car, Info, Sparkles } from 'lucide-react';
+import { MapPin, Users, Car, Sparkles } from 'lucide-react';
 import { UrbanZoneId, HouseholdType, CommuteCookingSetup, UserContext } from '../types';
 import { URBAN_ZONE_PROFILES, HOUSEHOLD_PROFILES, SETUP_PROFILES } from '../data/urbanProfiles';
 
@@ -8,13 +8,16 @@ interface ProfilerBarProps {
   onContextChange: (newContext: Partial<UserContext>) => void;
 }
 
+/**
+ * Interactive context profiler bar tailoring AI recommendations to user demographics and atmospheric zones
+ */
 export const ProfilerBar: React.FC<ProfilerBarProps> = ({ context, onContextChange }) => {
   const currentZone = URBAN_ZONE_PROFILES[context.zone];
   const currentHousehold = HOUSEHOLD_PROFILES[context.household];
   const currentSetup = SETUP_PROFILES[context.setup];
 
   return (
-    <section className="bg-slate-900/60 border-b border-slate-800/80 px-4 sm:px-6 lg:px-8 py-3.5">
+    <section className="bg-slate-900/60 border-b border-slate-800/80 px-4 sm:px-6 lg:px-8 py-3.5" aria-label="Lifestyle & Atmospheric Context Profiler">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           
@@ -35,11 +38,13 @@ export const ProfilerBar: React.FC<ProfilerBarProps> = ({ context, onContextChan
             
             {/* 1. Urban Zone Selector */}
             <div className="relative">
-              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <label htmlFor="urban-zone-select" className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
                 <MapPin className="w-3 h-3 text-indigo-400" />
                 Atmospheric Zone
               </label>
               <select
+                id="urban-zone-select"
+                aria-label="Select Atmospheric Zone Archetype"
                 value={context.zone}
                 onChange={(e) => onContextChange({ zone: e.target.value as UrbanZoneId })}
                 className="w-full bg-slate-800/90 hover:bg-slate-800 text-slate-100 text-xs font-medium rounded-lg border border-slate-700/80 px-3 py-1.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors cursor-pointer appearance-none"
@@ -58,11 +63,13 @@ export const ProfilerBar: React.FC<ProfilerBarProps> = ({ context, onContextChan
 
             {/* 2. Household Vulnerability Selector */}
             <div className="relative">
-              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <label htmlFor="household-profile-select" className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
                 <Users className="w-3 h-3 text-emerald-400" />
                 Household Profile
               </label>
               <select
+                id="household-profile-select"
+                aria-label="Select Household Vulnerability Profile"
                 value={context.household}
                 onChange={(e) => onContextChange({ household: e.target.value as HouseholdType })}
                 className="w-full bg-slate-800/90 hover:bg-slate-800 text-slate-100 text-xs font-medium rounded-lg border border-slate-700/80 px-3 py-1.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors cursor-pointer appearance-none"
@@ -81,11 +88,13 @@ export const ProfilerBar: React.FC<ProfilerBarProps> = ({ context, onContextChan
 
             {/* 3. Commute & Cooking Setup */}
             <div className="relative">
-              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <label htmlFor="cooking-transit-select" className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
                 <Car className="w-3 h-3 text-amber-400" />
                 Cooking & Transit Setup
               </label>
               <select
+                id="cooking-transit-select"
+                aria-label="Select Cooking and Commute Baseline Setup"
                 value={context.setup}
                 onChange={(e) => onContextChange({ setup: e.target.value as CommuteCookingSetup })}
                 className="w-full bg-slate-800/90 hover:bg-slate-800 text-slate-100 text-xs font-medium rounded-lg border border-slate-700/80 px-3 py-1.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors cursor-pointer appearance-none"

@@ -1,16 +1,37 @@
-import React from 'react';
-import { X, BookOpen, Atom, Calculator, CheckCircle2, ShieldCheck, ExternalLink } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, BookOpen, Atom, Calculator, ShieldCheck } from 'lucide-react';
 
 interface FormulaInspectorModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+/**
+ * Transparent scientific derivation modal detailing Berkeley Earth, CPCB/WHO, and IPCC formulas
+ */
 export const FormulaInspectorModal: React.FC<FormulaInspectorModalProps> = ({ isOpen, onClose }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="formula-inspector-title"
+    >
       <div className="relative w-full max-w-2xl bg-[#0F172A] border border-slate-700/80 rounded-2xl shadow-2xl p-6 text-slate-100 max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
@@ -20,7 +41,7 @@ export const FormulaInspectorModal: React.FC<FormulaInspectorModalProps> = ({ is
               <Calculator className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">Direct Impact Scientific Formulas</h3>
+              <h3 id="formula-inspector-title" className="font-bold text-base text-white">Direct Impact Scientific Formulas</h3>
               <p className="text-xs text-slate-400">
                 Transparent mathematical derivation validated against peer-reviewed environmental health literature
               </p>
@@ -28,6 +49,7 @@ export const FormulaInspectorModal: React.FC<FormulaInspectorModalProps> = ({ is
           </div>
           <button
             onClick={onClose}
+            aria-label="Close Formula Inspector"
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -114,6 +136,7 @@ export const FormulaInspectorModal: React.FC<FormulaInspectorModalProps> = ({ is
         <div className="mt-5 pt-4 border-t border-slate-800 flex justify-end">
           <button
             onClick={onClose}
+            aria-label="Close Formula Inspector Dialog"
             className="px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-colors"
           >
             Close Formula Inspector

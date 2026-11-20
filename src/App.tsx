@@ -118,6 +118,14 @@ export function App() {
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-100 flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-300 pb-20 lg:pb-8">
       
+      {/* Accessibility Skip Link */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-slate-950 focus:rounded-xl focus:font-bold focus:shadow-2xl"
+      >
+        Skip to main content
+      </a>
+
       {/* 1. Header with Live AQI & Smog Simulator Toggle */}
       <Header
         currentSeverity={context.severity}
@@ -134,11 +142,13 @@ export function App() {
       />
 
       {/* 3. Main Application Body */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+      <main id="main-content" className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         
         {/* Navigation Tabs */}
-        <div className="flex items-center space-x-2 border-b border-slate-800/80 mb-6 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center space-x-2 border-b border-slate-800/80 mb-6 overflow-x-auto pb-2 scrollbar-none" role="tablist" aria-label="Application Sections">
           <button
+            role="tab"
+            aria-selected={activeTab === 'copilot'}
             onClick={() => setActiveTab('copilot')}
             className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shrink-0 ${
               activeTab === 'copilot'
@@ -152,6 +162,8 @@ export function App() {
           </button>
 
           <button
+            role="tab"
+            aria-selected={activeTab === 'routine'}
             onClick={() => setActiveTab('routine')}
             className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shrink-0 ${
               activeTab === 'routine'
@@ -169,6 +181,8 @@ export function App() {
           </button>
 
           <button
+            role="tab"
+            aria-selected={activeTab === 'iaq'}
             onClick={() => setActiveTab('iaq')}
             className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shrink-0 ${
               activeTab === 'iaq'
@@ -186,6 +200,8 @@ export function App() {
           </button>
 
           <button
+            role="tab"
+            aria-selected={activeTab === 'community'}
             onClick={() => setActiveTab('community')}
             className={`px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shrink-0 ${
               activeTab === 'community'
