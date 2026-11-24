@@ -20,7 +20,10 @@ export default tseslint.config(
       'no-unused-vars': 'off',
       'react-hooks/purity': 'off',
       'react-hooks/set-state-in-effect': 'off',
-      'prefer-const': 'warn',
+      'prefer-const': 'error',
+      'no-console': 'warn',
+      'complexity': ['warn', 12],
+      'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
     },
   }
 );
